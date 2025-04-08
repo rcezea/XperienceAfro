@@ -1,0 +1,101 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Montserrat', sans-serif;
+  line-height: 1.6;
+  color: #fff;
+  background: #000;
+}
+
+a {
+  text-decoration: none;
+  color: inherit;
+}
+
+section {
+  padding: 60px 20px;
+  text-align: center;
+}
+
+.hero {
+  background-size: cover;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.hero h1 {
+  font-size: 3rem;
+  background: rgba(0, 0, 0, 0.6);
+  padding: 20px;
+  border-radius: 10px;
+}
+
+.hero p {
+  font-size: 1.2rem;
+  margin-top: 10px;
+}
+
+.event h2, .tickets h2, .gallery h2, .contact h2 {
+  font-size: 2rem;
+  margin-bottom: 20px;
+}
+
+.event .details {
+  max-width: 600px;
+  margin: auto;
+  font-size: 1rem;
+  background: #111;
+  padding: 20px;
+  border-radius: 10px;
+}
+
+.tickets .ticket-option {
+  background: #222;
+  margin: 10px auto;
+  max-width: 300px;
+  padding: 20px;
+  border-radius: 10px;
+}
+
+.tickets button {
+  background: #ff5733;
+  color: #fff;
+  border: none;
+  padding: 10px 20px;
+  margin-top: 10px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.gallery-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.gallery-grid img {
+  width: 100%;
+  height: auto;
+  border-radius: 10px;
+}
+
+.contact a {
+  display: inline-block;
+  margin: 0 10px;
+  color: #ff5733;
+}
+
+footer {
+  background: #111;
+  padding: 20px;
+  font-size: 0.8rem;
+}
+
