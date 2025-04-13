@@ -22,7 +22,12 @@ section {
 }
 
 .hero {
+  background-color: #000;
+  background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.9)),
+            url("../images/IMG-20250407-WA0175.jpg");
   background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
   height: 100vh;
   display: flex;
   flex-direction: column;
@@ -32,7 +37,7 @@ section {
 
 .hero h1 {
   font-size: 3rem;
-  background: rgba(0, 0, 0, 0.6);
+  /* background: rgba(0, 0, 0, 0.6); */
   padding: 20px;
   border-radius: 10px;
 }
