@@ -2,13 +2,11 @@ import base64
 import os
 
 from backend.app.routes import payments, tickets, admin_auth
-from dotenv import load_dotenv
+
 from fastapi import FastAPI, Request
 from fastapi.templating import Jinja2Templates
 from starlette.staticfiles import StaticFiles
 
-# Load environment variables
-load_dotenv()
 
 app = FastAPI()
 
