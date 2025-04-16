@@ -66,27 +66,49 @@ document.getElementById("gate-sales-form").addEventListener("submit", async func
   ticket_sale_button.innerText = "Confirm Sale";
 });
 
-
 // QR Scanner Logic
 const qrTextInput = document.getElementById("qr-text");
 const qrReader = new Html5Qrcode("qr-reader");
 const qrConfig = { fps: 10, qrbox: 250 };
+const cameraSelect = document.getElementById("camera-select");
 
+// Populate camera list
+Html5Qrcode.getCameras().then(devices => {
+  if (devices && devices.length) {
+    devices.forEach((device, index) => {
+      const option = document.createElement("option");
+      option.value = device.id;
+      option.text = device.label || `Camera ${index + 1}`;
+      cameraSelect.appendChild(option);
+    });
+  }
+}).catch(err => console.error("Camera access error:", err));
+
+// Start Scanner
 document.getElementById("start-scanner").addEventListener("click", () => {
-  Html5Qrcode.getCameras().then(devices => {
-    if (devices && devices.length) {
-      qrReader.start(devices[0].id, qrConfig, (decodedText) => {
-        qrTextInput.value = decodedText;
-        qrReader.stop().catch(err => console.error("Failed to stop after scan", err));
-      });
-    }
-  }).catch(err => console.error("Camera access error:", err));
+  const selectedCameraId = cameraSelect.value;
+  if (!selectedCameraId) {
+    alert("Please select a camera.");
+    return;
+  }
+
+  qrReader.start(selectedCameraId, qrConfig, (decodedText) => {
+    qrTextInput.value = decodedText;
+
+    qrReader.stop().then(() => {
+      document.getElementById("qr-reader").innerHTML = ""; // Prevent mobile freeze
+    }).catch(err => console.error("Failed to stop after scan", err));
+  }).catch(err => console.error("Start scan error:", err));
 });
 
+// Stop Scanner manually
 document.getElementById("stop-scanner").addEventListener("click", () => {
-  qrReader.stop().catch(err => console.error("Stop failed", err));
+  qrReader.stop().then(() => {
+    document.getElementById("qr-reader").innerHTML = "";
+  }).catch(err => console.error("Stop failed", err));
 });
 
+// Handle form submit
 const used_ticket_button = document.getElementById("ticket-used-button");
 
 document.getElementById("scanner-form").addEventListener("submit", async function (e) {
@@ -109,7 +131,7 @@ document.getElementById("scanner-form").addEventListener("submit", async functio
       headers: {
         "Content-Type": "application/json"
       },
-      credentials: "same-origin", // Important: include session cookie
+      credentials: "same-origin",
       body: JSON.stringify({ ticket: code })
     });
 
@@ -123,7 +145,6 @@ document.getElementById("scanner-form").addEventListener("submit", async functio
   } catch (err) {
     alert("Error: " + err.message);
   }
-
 
   qrTextInput.value = "";
   used_ticket_button.disabled = false;
