@@ -1,7 +1,8 @@
-import smtplib
 import os
+import smtplib
 from email.message import EmailMessage
 from io import BytesIO
+
 
 def send_ticket_email(recipient_email: str, pdf_bytes_list: list[bytes | BytesIO]):
     smtp_server = os.getenv("SMTP_SERVER")

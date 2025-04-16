@@ -1,6 +1,6 @@
-# Create a file `init_db.py`:
+from backend.app.database import Base
+from backend.app.database import DATABASE_URL
 from sqlalchemy import create_engine
-from backend.app.database import Base, DATABASE_URL
 
 engine = create_engine(DATABASE_URL)
 

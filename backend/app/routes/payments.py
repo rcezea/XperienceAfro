@@ -1,15 +1,16 @@
+import hashlib
+import hmac
+import os
+
+from backend.app.database import get_db
+from backend.app.services.ticket_controller import issue_tickets
 from fastapi import APIRouter, Request, Header, HTTPException, Depends
 from sqlalchemy.orm import Session
-from backend.app.database import get_db
-from backend.app.services.ticket_issuer import issue_tickets
-import os
-import hmac
-import hashlib
-
 
 router = APIRouter()
 PAYSTACK_SECRET = os.getenv("PAYSTACK_SECRET_KEY")
-TICKET_PRICE = 5000  # Naira
+TICKET_PRICE_NAIRA = int(os.getenv("TICKET_PRICE"))
+TICKET_PRICE_KOBO = TICKET_PRICE_NAIRA * 100
 
 
 @router.post("/payments/webhook")
@@ -18,6 +19,7 @@ async def paystack_webhook(
     db: Session = Depends(get_db),
     x_paystack_signature: str = Header(None)
 ):
+    # Verify Paystack webhook signature
     raw_body = await request.body()
     computed_signature = hmac.new(
         PAYSTACK_SECRET.encode("utf-8"),
@@ -37,20 +39,24 @@ async def paystack_webhook(
     data = payload["data"]
     email = data["customer"]["email"]
     amount_paid_kobo = data["amount"]
-    amount_paid_naira = amount_paid_kobo // 100
-
-    num_tickets = amount_paid_naira // TICKET_PRICE
-    if num_tickets < 1:
-        raise HTTPException(status_code=400, detail="Payment too small for a ticket")
-
-    # Issue the tickets using the reusable service function
     reference = data["reference"]
+
+    # Ensure the amount is a multiple of ticket price
+    if amount_paid_kobo % TICKET_PRICE_KOBO != 0:
+        raise HTTPException(
+            status_code=400,
+            detail=f"Invalid payment amount ({amount_paid_kobo}) not a multiple of ticket price ({TICKET_PRICE_KOBO})"
+        )
+
+    num_tickets = amount_paid_kobo // TICKET_PRICE_KOBO
+    if num_tickets < 1:
+        raise HTTPException(status_code=400, detail="Payment too small for at least one ticket")
 
     issued_tickets = issue_tickets(
         db=db,
         email=email,
         quantity=num_tickets,
-        payment_amount=amount_paid_naira,
+        payment_amount=amount_paid_kobo // 100,
         reference=reference,
     )
 

@@ -1,30 +1,40 @@
-from fastapi import APIRouter, Depends, HTTPException, Header
-from sqlalchemy.orm import Session
-from backend.app.database import get_db
-from backend.app.models import User
-from backend.app.services.ticket_delivery import deliver_ticket
 import os
+
+from backend.app.database import get_db
+from backend.app.models import User, Ticket
+from backend.app.services.auth import Auth
+from backend.app.services.ticket_delivery import deliver_ticket
+from fastapi import APIRouter, Depends, HTTPException, Request
+from sqlalchemy.orm import Session
 
 router = APIRouter()
 ADMIN_API_KEY = os.getenv("ADMIN_API_KEY")
+TICKET_GATE_PRICE = int(os.getenv("TICKET_GATE_PRICE"))
 
 
 @router.post("/tickets/generate")
 def generate_ticket_admin(
-    request: dict,
-    x_api_key: str = Header(None),
+    body: dict,
+    req: Request,
     db: Session = Depends(get_db)
 ):
-    if x_api_key != ADMIN_API_KEY:
-        raise HTTPException(status_code=401, detail="Unauthorized")
+    # Get the session ID from the cookies
+    session_id = req.cookies.get("session_id")
 
-    from backend.app.services.ticket_issuer import issue_tickets
+    if not session_id:
+        raise HTTPException(status_code=401, detail="Session ID not found in cookies")
 
-    email = request.get('email')  # Get email from the body
-    quantity = request.get('quantity', 1)
-    phone = request.get('phone', "0")
-    name = request.get('name', "")
-    price = request.get('price', 0)
+    auth_service = Auth(db)
+    admin = auth_service.get_user_from_session_id(session_id).decode('utf-8')
+
+
+    from backend.app.services.ticket_controller import issue_tickets
+
+    email = body.get('email')  # Get email from the body
+    quantity = body.get('quantity', 1)
+    phone = body.get('phone', "0")
+    name = body.get('name', "")
+
 
     tickets = issue_tickets(
         db=db,
@@ -32,8 +42,8 @@ def generate_ticket_admin(
         quantity=quantity,
         name=name,
         phone=phone,
-        payment_amount=price,
-        reference="cash",
+        payment_amount=TICKET_GATE_PRICE,
+        reference="cash-{}".format(admin),
     )
 
     return {
@@ -41,9 +51,35 @@ def generate_ticket_admin(
         "ticket_codes": [ticket.ticket_code for ticket in tickets]
     }
 
+@router.post("/tickets/scan")
+def scan_ticket( body: dict , req: Request , db: Session = Depends(get_db) ):
+
+    session_id = req.cookies.get("session_id")
+
+    if not session_id:
+        raise HTTPException(status_code=401, detail="Session ID not found in cookies")
+
+    ticket_code = body.get('ticket')
+
+    ticket = db.query(Ticket).filter_by(ticket_code=ticket_code).first()
+
+    if not ticket:
+        raise HTTPException(status_code=404, detail="Ticket not found. NO ENTRY!")
+
+    if ticket.is_used:
+        raise HTTPException(status_code=400, detail="Ticket is already used")
+    else:
+        ticket.is_used = True
+        db.commit()
+        db.refresh(ticket)
+        return { "message": "Ticket successfully scanned. WELCOME!" }
+
+
+
+
 @router.post("/tickets/resend")
-def resend_tickets(request: dict, db: Session = Depends(get_db)):
-    email = request.get('email')
+def resend_tickets(body: dict, db: Session = Depends(get_db)):
+    email = body.get('email')
     user = db.query(User).filter(User.email == email).first()
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
@@ -51,7 +87,6 @@ def resend_tickets(request: dict, db: Session = Depends(get_db)):
     if not user.tickets:
         raise HTTPException(status_code=404, detail="User has no tickets")
 
-    for ticket in user.tickets:
-        deliver_ticket(ticket, user.email)
+    deliver_ticket(user.tickets, user.email)
 
-    return {"message": f"{len(user.tickets)} ticket(s) resent to {email}"}
+    return { "message": f"{len(user.tickets)} ticket(s) resent to {email}" }

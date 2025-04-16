@@ -1,10 +1,14 @@
-from fastapi import FastAPI, Request
-from starlette.staticfiles import StaticFiles
-from fastapi.templating import Jinja2Templates
+import base64
+import os
 
 from backend.app.routes import payments, tickets, admin_auth
-import backend.app.db_init
-import os
+from dotenv import load_dotenv
+from fastapi import FastAPI, Request
+from fastapi.templating import Jinja2Templates
+from starlette.staticfiles import StaticFiles
+
+# Load environment variables
+load_dotenv()
 
 app = FastAPI()
 
@@ -17,12 +21,34 @@ ticket_price = os.getenv("TICKET_PRICE")
 
 
 # Serve frontend
-app.mount("/static", StaticFiles(directory="frontend", html=True), name="static")
+app.mount("/static", StaticFiles(directory="frontend/static", html=True), name="static")
 
 # Jinja2 template configuration
 templates = Jinja2Templates(directory="frontend/templates")
+
+templates.env.filters["b64encode"] = lambda s: base64.b64encode(s.encode()).decode()
+templates.env.filters["b64decode"] = lambda s: base64.b64decode(s).decode()
+
 
 # Route for serving the main HTML page
 @app.get("/")
 async def serve_main_page(request: Request):
     return templates.TemplateResponse("index.html", {"request": request, "ticket_price": ticket_price})
+
+@app.get("/tickets/scan")
+async def scan( request: Request ):
+    session_id =  request.cookies.get("session_id")
+    if not session_id:
+        return templates.TemplateResponse("admin.html", {"request": request})
+
+    from backend.app.services.auth import Auth
+    from backend.app.database import get_db
+
+    auth = Auth(get_db())
+
+    user = auth.get_user_from_session_id(session_id)
+
+    if not user:
+        return templates.TemplateResponse("admin.html", {"request": request})
+
+    return templates.TemplateResponse("scanner.html", {"request": request})

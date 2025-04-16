@@ -32,3 +32,10 @@ class Payment(Base):
     reference = Column(String, unique=False, nullable=False)
 
     tickets = relationship('Ticket', back_populates='payment')  # Change here to allow multiple tickets
+
+class Admin(Base):
+    __tablename__ = 'admins'
+
+    id = Column(Integer, primary_key=True)
+    username = Column(String, unique=True, index=True, nullable=False)
+    hashed_password = Column(String, nullable=False)

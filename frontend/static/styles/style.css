@@ -148,6 +148,10 @@ footer {
   cursor: pointer;
 }
 
+.resend-ticket button:disabled {
+  background-color: #3e0d02;
+}
+
 .resend-ticket button:hover {
   background: #e04a2d;
 }

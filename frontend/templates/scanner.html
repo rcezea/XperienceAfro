@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>QR Scanner - Experience Afro</title>
+  <link rel="shortcut icon" href="../static/images/favicon/android-chrome-512x512.png" type="image/x-icon" />
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"/>
+  <link rel="stylesheet" href="../static/styles/style.css" />
+  <script src="https://cdn.jsdelivr.net/npm/html5-qrcode/minified/html5-qrcode.min.js"></script>
+</head>
+<body>
+
+<!-- GATE TICKET SALES -->
+<section class="tickets">
+  <h2>Gate Ticket Sales</h2>
+  <form id="gate-sales-form">
+    <label>Name: <input type="text" name="gate-name" required /></label><br />
+    <label>Email: <input type="email" name="gate-email" required /></label><br />
+    <label>Phone: <input type="text" name="gate-phone" required /></label><br /><br />
+
+    <div class="ticket-option">
+      <h3>Ticket Quantity</h3>
+      <div class="ticket-controls">
+        <button type="button" id="gate-decrease-qty">-</button>
+        <span id="gate-ticket-count">1</span>
+        <button type="button" id="gate-increase-qty">+</button>
+      </div>
+    </div>
+
+    <button id="ticket_sale_button" type="submit">Confirm Sale</button>
+  </form>
+</section>
+
+<!-- QR SCANNER SECTION -->
+<section class="resend-ticket">
+  <h3>QR Code Scanner</h3>
+
+  <div style="margin-bottom: 10px;">
+    <button id="start-scanner">Start Scanner</button>
+    <button id="stop-scanner" style="background:#555;">Stop Scanner</button>
+  </div>
+
+  <div id="qr-reader" style="width: 300px; margin: auto;"></div>
+
+  <form id="scanner-form" style="margin-top:20px;">
+    <label>Scanned Code:
+      <input type="text" id="qr-text" placeholder="Scan QR to autofill" required />
+    </label><br />
+    <button id="ticket-used-button" type="submit">Mark as Used</button>
+  </form>
+</section>
+
+<footer>
+  <p>&copy; <span id="year"></span> Experience Afro. All rights reserved.</p>
+</footer>
+<script src="../static/scripts/scanner.js"></script>
+</body>
+</html>

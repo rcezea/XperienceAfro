@@ -1,9 +1,9 @@
-# app/services/ticket_issuer.py
+import uuid
 
-from sqlalchemy.orm import Session
 from backend.app.models import User, Ticket, Payment
 from backend.app.services.ticket_delivery import deliver_ticket
-import uuid
+from sqlalchemy.orm import Session
+
 
 def issue_tickets(
     db: Session,

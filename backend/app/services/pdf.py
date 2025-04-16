@@ -1,6 +1,7 @@
+from io import BytesIO
+
 from reportlab.lib.pagesizes import letter
 from reportlab.pdfgen import canvas
-from io import BytesIO
 
 
 def create_ticket_pdf(ticket_code: str, qr_image: BytesIO) -> BytesIO:

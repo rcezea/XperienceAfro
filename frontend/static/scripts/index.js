@@ -21,18 +21,23 @@ increaseBtn.addEventListener("click", () => {
   counterDisplay.textContent = ticketCount;
 });
 
+const resend_btn = document.getElementById("resend-btn");
+
+
 document.getElementById("ticket-form").addEventListener("submit", function (e) {
   e.preventDefault();
 
   const email = e.target.email.value;
   const name = e.target.name.value;
   const phone = e.target.phone.value;
-  const amount = ticketCount * 5000 * 100; // Convert to kobo
+
+  const amount = ticketCount * ticket_price * 100; // Convert to kobo
+  alert(amount);
 
   const handler = PaystackPop.setup({
     key: "pk_test_b5eec36691f6be396e16b71518b13cef5193c7b2", // Replace with your Paystack public key
     email: email,
-    amount: 7000,
+    amount: amount,
     metadata: {
       custom_fields: [
         { display_name: "Name", variable_name: "name", value: name },
@@ -56,6 +61,9 @@ document.getElementById("ticket-form").addEventListener("submit", function (e) {
 
 document.getElementById('resend-form').addEventListener('submit', function(event) {
   event.preventDefault();
+
+  resend_btn.disabled = true;
+  resend_btn.innerText = "SENDING...";
 
   const email = document.getElementById('resend-email').value;
 
@@ -81,18 +89,29 @@ document.getElementById('resend-form').addEventListener('submit', function(event
     },
     body: JSON.stringify(requestData),
   })
-  .then(response => response.json())
-  .then(data => {
-    // Check if the API returned a success message
-    if (data.message) {
-      alert(data.message);
-    } else {
-      alert('No tickets with this email address');
-    }
-  })
-  .catch(error => {
-    console.error('Error:', error);
-    alert('Failed to resend your ticket. Please try again later.');
-  });
+  .then(response => {
+  if (!response.ok) {
+    // If the response status code isn't in the 200–299 range, it's an error
+    return Promise.reject(new Error(`HTTP error! Status: ${response.status}`));
+  }
+  return response.json(); // Proceed to parse JSON if the response is OK
+})
+.then(data => {
+  // Handle success response
+  if (data.message) {
+    alert(data.message);
+  } else {
+    resend_btn.disabled = false;
+    resend_btn.innerText = "RESEND";
+
+  }
+})
+.catch(error => {
+  // Catch any error (network issue, bad response, etc.)
+  resend_btn.disabled = false;
+  resend_btn.innerText = "RESEND";
+  alert('No tickets with this email address');
+  console.error(error); // Log the error for debugging
+});
 });
 
