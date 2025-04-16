@@ -4,7 +4,7 @@
 	<meta charset="UTF-8" />
 	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 	<title>Experience Afro</title>
-	<link rel="shortcut icon" href="images/favicon/android-chrome-512x512.png" type="image/x-icon">
+	<link rel="shortcut icon" href="../static/images/favicon/android-chrome-512x512.png" type="image/x-icon">
 	<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700&display=swap" rel="stylesheet">
 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 	<link rel="stylesheet" href="styles/style.css" />
@@ -47,6 +47,18 @@
 
     <button type="submit" id="paystack-btn">Buy Now</button>
   </form>
+
+	<!-- Resend Ticket Section -->
+  <div class="resend-ticket">
+    <h3>Resend Your Ticket</h3>
+    <form id="resend-form">
+      <label>Enter your email to resend your ticket:
+        <input type="email" id="resend-email" name="resend-email" required placeholder="Enter email" />
+      </label><br />
+      <button type="submit" id="resend-btn">RESEND</button>
+    </form>
+  </div>
+
 </section>
 
 
@@ -59,7 +71,10 @@
 <footer>
 	<p>&copy; <span id="year"> </span> Experience Afro. All rights reserved.</p>
 </footer>
+<label>
+    <input name="amount" type="hidden" value="{{ ticket_price }}" >
+</label>
 
-<script src="scripts/index.js"></script>
+<!--<script src=../static/scripts/index.js"></script>-->
 </body>
 </html>

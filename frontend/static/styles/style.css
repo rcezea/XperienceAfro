@@ -64,6 +64,16 @@ section {
   border-radius: 10px;
 }
 
+#ticket-form input {
+  padding: 10px;
+  margin-top: 10px;
+  width: 100%;
+  max-width: 300px;
+  border-radius: 5px;
+  border: 1px solid #ddd;
+  background-color: white;
+}
+
 .tickets button {
   background: #ff5733;
   color: #fff;
@@ -99,3 +109,51 @@ footer {
   font-size: 0.8rem;
 }
 
+
+.resend-ticket {
+  background: #333;
+  margin: 20px auto;
+  padding: 20px;
+  border-radius: 10px;
+  max-width: 400px;
+}
+
+.resend-ticket h3 {
+  color: #fff;
+  font-size: 1.5rem;
+  margin-bottom: 15px;
+}
+
+.resend-ticket label {
+  font-size: 1rem;
+  color: #fff;
+}
+
+.resend-ticket input {
+  padding: 10px;
+  margin-top: 10px;
+  width: 100%;
+  max-width: 300px;
+  border-radius: 5px;
+  border: 1px solid #ddd;
+}
+
+.resend-ticket button {
+  background: #ff5733;
+  color: #fff;
+  border: none;
+  padding: 10px 20px;
+  margin-top: 10px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.resend-ticket button:hover {
+  background: #e04a2d;
+}
+
+input:focus {
+  border-color: #ff5733;
+  outline: none;
+  box-shadow: 0 0 5px rgba(255, 87, 51, 0.5);
+}

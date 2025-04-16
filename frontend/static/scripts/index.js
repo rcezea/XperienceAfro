@@ -32,7 +32,7 @@ document.getElementById("ticket-form").addEventListener("submit", function (e) {
   const handler = PaystackPop.setup({
     key: "pk_test_b5eec36691f6be396e16b71518b13cef5193c7b2", // Replace with your Paystack public key
     email: email,
-    amount: amount,
+    amount: 7000,
     metadata: {
       custom_fields: [
         { display_name: "Name", variable_name: "name", value: name },
@@ -50,3 +50,49 @@ document.getElementById("ticket-form").addEventListener("submit", function (e) {
 
   handler.openIframe();
 });
+
+
+// Resend ticket
+
+document.getElementById('resend-form').addEventListener('submit', function(event) {
+  event.preventDefault();
+
+  const email = document.getElementById('resend-email').value;
+
+  // Simple email validation regex
+  const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
+
+  // Check if the email format is valid
+  if (!emailRegex.test(email)) {
+    alert('Please enter a valid email address.');
+    return;
+  }
+
+  // Prepare the data to send to the API
+  const requestData = {
+    email: email
+  };
+
+  // Make the API call
+  fetch('/tickets/resend', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(requestData),
+  })
+  .then(response => response.json())
+  .then(data => {
+    // Check if the API returned a success message
+    if (data.message) {
+      alert(data.message);
+    } else {
+      alert('No tickets with this email address');
+    }
+  })
+  .catch(error => {
+    console.error('Error:', error);
+    alert('Failed to resend your ticket. Please try again later.');
+  });
+});
+
