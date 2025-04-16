@@ -1,12 +1,13 @@
 import base64
 import os
+import backend.app.db_init
+
 
 from backend.app.routes import payments, tickets, admin_auth
 
 from fastapi import FastAPI, Request
 from fastapi.templating import Jinja2Templates
 from starlette.staticfiles import StaticFiles
-
 
 app = FastAPI()
 
