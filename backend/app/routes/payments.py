@@ -19,6 +19,7 @@ async def paystack_webhook(
     db: Session = Depends(get_db),
     x_paystack_signature: str = Header(None)
 ):
+
     # Verify Paystack webhook signature
     raw_body = await request.body()
     computed_signature = hmac.new(
