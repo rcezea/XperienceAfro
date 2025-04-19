@@ -21,22 +21,31 @@ async def paystack_webhook(
 ):
     # Verify Paystack webhook signature
     raw_body = await request.body()
+    print("Raw Body: \n\n", raw_body)
     computed_signature = hmac.new(
         PAYSTACK_SECRET.encode("utf-8"),
         msg=raw_body,
         digestmod=hashlib.sha512,
     ).hexdigest()
 
+    print("\nComputed signature: \n\n", computed_signature)
+
+    print("\n x_paystack_signature: \n\n", x_paystack_signature)
+
     if computed_signature != x_paystack_signature:
         raise HTTPException(status_code=403, detail="Invalid signature")
 
+
     payload = await request.json()
+    
+    print("\nPayment payload: \n\n", payload)
     event = payload.get("event")
 
     if event != "charge.success":
         return {"status": "ignored"}
 
     data = payload["data"]
+    print("\nPayment data: \n\n", data)
     email = data["customer"]["email"]
     amount_paid_kobo = data["amount"]
     reference = data["reference"]
